@@ -1,7 +1,6 @@
 import math
 import time
 from heapq import heappush, heappop
-from pyvisgraph.shortest_path import priority_dict
 import queue as Q
 
 
@@ -85,13 +84,10 @@ def aStar(maze, start, end, weight, **kwargs):
         # Found the goal
         if current_node.position == end.position:
             return solution_path(current_node, maze)
-
         # Generate children
         children = current_node.get_children(end)
-
         # Loop through children
         for child in children:
-
             # Child is on the closed list
             if child in closed_list:
                 continue
@@ -106,6 +102,8 @@ def aStar(maze, start, end, weight, **kwargs):
             else:
                 open_list_queue.put(child)
                 open_list[(child)] = child
+
+    # todo return solution path size, and how many nodes were expanded
 
 
 def make_maze_from_file(map_file):
