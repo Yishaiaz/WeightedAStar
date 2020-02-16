@@ -29,16 +29,9 @@ class Node:
     def __hash__(self):
         return hash(self.position)
 
-    def get_neighbors(self, end_node, weight: float): # todo: remove graph parameter & add the Weighted W
+    def get_children(self, end_node, weight: float, **kwargs): # todo: remove graph parameter & add the Weighted W
         children = []
-        for edge in graph[self.position]:
-            node_position = edge
-            # Create new node
-            new_node = Node(self, node_position)
-            new_node.g = self.g + graph[self.position][node_position]['weight']
-            new_node.h = euclidean_distance(node_position, end_node.position)
-            new_node.f = new_node.g + new_node.h
-            children.append(new_node)
+
         return children
 
 
@@ -72,20 +65,20 @@ def aStar(maze, start, end, graph): # todo: remove graph parameter
 
     # Initialize both open and closed list
     open_list_queue = Q.PriorityQueue()
-    open_list = [] # todo: change to dictionary or set
+    open_list = dict() # todo: change to dictionary or set
     closed_list = []
 
     # Add the start node
     # heappush(open_list, start_node)
     open_list_queue.put(start)
-    open_list.append(start)
+    open_list[(start)] = start
     # Loop until you find the end
-    while len(open_list) > 0:
+    while len(open_list.values()) > 0:
         # Get the current node
         current_node = open_list_queue.get()
         if current_node not in open_list:
             continue
-        open_list.remove(current_node)
+        open_list.pop((current_node))
         # Pop current off open list, add to closed list
         closed_list.append(current_node)
         # Found the goal
@@ -104,14 +97,14 @@ def aStar(maze, start, end, graph): # todo: remove graph parameter
 
             # Child is already in the open list
             if child in open_list:
-                dup_child = open_list[open_list.index(child)]
+                dup_child = open_list[(child)]
                 if child.g < dup_child.g:
-                    open_list.remove(dup_child)
+                    open_list.pop((dup_child))
                     open_list_queue.put(child)
             # Add the child to the open list
             else:
                 open_list_queue.put(child)
-                open_list.append(child)
+                open_list[(child)] = child
 
 
 def make_maze_from_file(map_file):
