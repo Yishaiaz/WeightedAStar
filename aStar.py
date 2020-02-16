@@ -35,28 +35,28 @@ class Node:
         return children
 
 
-def solution_path(current_node, maze, graph): # todo: remove graph parameter
+def solution_path(current_node, maze): # todo: remove graph parameter
     path_cost = current_node.g
     path = []
     current = current_node
-    while current is not None:
-        path.append((current.position[0], current.position[1]))
-        if maze is not None:
-            maze[current.position[1]][current.position[0]] = 2
-            if current.parent is not None:
-                sub_path = graph[current.parent.position][current.position]['path'][1:-1][::-1]
-                for point in sub_path:
-                    path.append(point)
-        current = current.parent
-    if maze is not None:
-        for point in path:
-            maze[point[1]][point[0]] = 2
-    print(path_cost)
+    # while current is not None:
+    #     path.append((current.position[0], current.position[1]))
+    #     if maze is not None:
+    #         maze[current.position[1]][current.position[0]] = 2
+    #         if current.parent is not None:
+    #             # sub_path = graph[current.parent.position][current.position]['path'][1:-1][::-1]
+    #             # for point in sub_path:
+    #             #     path.append(point)
+    #     current = current.parent
+    # if maze is not None:
+    #     for point in path:
+    #         maze[point[1]][point[0]] = 2
+    # print(path_cost)
     return path[::-1]  # Return reversed path
     # return path_cost
 
 
-def aStar(maze, start, end, graph): # todo: remove graph parameter
+def aStar(maze, start, end):
     # Create start and end node
     # start_node = Node(None, start)
     # start_node.h = euclidean_distance(start, end)
@@ -65,7 +65,7 @@ def aStar(maze, start, end, graph): # todo: remove graph parameter
 
     # Initialize both open and closed list
     open_list_queue = Q.PriorityQueue()
-    open_list = dict() # todo: change to dictionary or set
+    open_list = dict()
     closed_list = []
 
     # Add the start node
@@ -83,10 +83,10 @@ def aStar(maze, start, end, graph): # todo: remove graph parameter
         closed_list.append(current_node)
         # Found the goal
         if current_node.position == end.position:
-            return solution_path(current_node, maze, graph)
+            return solution_path(current_node, maze)
 
         # Generate children
-        children = current_node.get_neighbors(end, graph)
+        children = current_node.get_children(end)
 
         # Loop through children
         for child in children:
