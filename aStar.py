@@ -1,4 +1,5 @@
 import math
+import time
 from heapq import heappush, heappop
 from pyvisgraph.shortest_path import priority_dict
 import queue as Q
@@ -56,7 +57,7 @@ def solution_path(current_node, maze): # todo: remove graph parameter
     # return path_cost
 
 
-def aStar(maze, start, end):
+def aStar(maze, start, end, weight, **kwargs):
     # Create start and end node
     # start_node = Node(None, start)
     # start_node.h = euclidean_distance(start, end)
