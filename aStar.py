@@ -4,10 +4,6 @@ from heapq import heappush, heappop
 import queue as Q
 
 
-def euclidean_distance(start, end):
-    return math.sqrt((start[0] - end[0]) ** 2 + (start[1] - end[1]) ** 2)
-
-
 class Node:
     def __init__(self, parent=None, position=None):
         self.parent = parent
@@ -29,34 +25,54 @@ class Node:
     def __hash__(self):
         return hash(self.position)
 
-    def get_children(self, end_node, weight: float, **kwargs): # todo: remove graph parameter & add the Weighted W
+    def get_children(self, maze, end_node):
         children = []
+        for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:  # Adjacent squares
 
+            # Get node position
+            node_position = (self.position[0] + new_position[0], self.position[1] + new_position[1])
+
+            # Make sure within range
+            if node_position[1] > (len(maze) - 1) or node_position[1] < 0 or\
+                    node_position[0] > (len(maze[len(maze) - 1]) - 1) or node_position[0] < 0:
+                continue
+
+            # Make sure walkable terrain
+            if maze[node_position[1]][node_position[0]] != 0:
+                continue
+
+            # Create new node
+            new_node = Node(self, node_position)
+            if new_position in [(-1, -1), (-1, 1), (1, -1), (1, 1)]:
+                new_node.g = self.g + math.sqrt(2)
+            else:
+                new_node.g = self.g + 1
+            euclidean_distance = math.sqrt((new_node.position[0] - end_node.position[0]) ** 2 + (new_node.position[1] - end_node.position[1]) ** 2)
+            new_node.h = euclidean_distance
+            new_node.f = new_node.g + new_node.h
+
+            # Append
+            children.append(new_node)
         return children
 
 
-def solution_path(current_node, maze): # todo: remove graph parameter
-    path_cost = current_node.g
-    path = []
-    current = current_node
-    # while current is not None:
-    #     path.append((current.position[0], current.position[1]))
-    #     if maze is not None:
-    #         maze[current.position[1]][current.position[0]] = 2
-    #         if current.parent is not None:
-    #             # sub_path = graph[current.parent.position][current.position]['path'][1:-1][::-1]
-    #             # for point in sub_path:
-    #             #     path.append(point)
-    #     current = current.parent
-    # if maze is not None:
-    #     for point in path:
-    #         maze[point[1]][point[0]] = 2
-    # print(path_cost)
-    return path[::-1]  # Return reversed path
-    # return path_cost
-
-
 def aStar(maze, start, end, weight, **kwargs):
+
+    def solution_path(current_node, maze):
+        path_cost = current_node.g
+        path = []
+        current = current_node
+        while current is not None:
+            path.append((current.position[0], current.position[1]))
+            if maze is not None:
+                maze[current.position[1]][current.position[0]] = 2
+                if current.parent is not None:
+                    path.append(current.parent.position)
+            current = current.parent
+        if maze is not None:
+            for point in path:
+                maze[point[1]][point[0]] = 2
+        return path[::-1], path_cost  # Return reversed path
     # Create start and end node
     # start_node = Node(None, start)
     # start_node.h = euclidean_distance(start, end)
@@ -83,9 +99,10 @@ def aStar(maze, start, end, weight, **kwargs):
         closed_list.append(current_node)
         # Found the goal
         if current_node.position == end.position:
+            # todo return solution path size, and how many nodes were expanded
             return solution_path(current_node, maze)
         # Generate children
-        children = current_node.get_children(end)
+        children = current_node.get_children(maze=maze, end_node=end)
         # Loop through children
         for child in children:
             # Child is on the closed list
@@ -102,8 +119,6 @@ def aStar(maze, start, end, weight, **kwargs):
             else:
                 open_list_queue.put(child)
                 open_list[(child)] = child
-
-    # todo return solution path size, and how many nodes were expanded
 
 
 def make_maze_from_file(map_file):
