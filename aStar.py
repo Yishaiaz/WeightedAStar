@@ -4,10 +4,6 @@ from heapq import heappush, heappop
 import queue as Q
 
 
-def euclidean_distance(start, end):
-    return math.sqrt((start[0] - end[0]) ** 2 + (start[1] - end[1]) ** 2)
-
-
 class Node:
     def __init__(self, parent=None, position=None):
         self.parent = parent
@@ -29,9 +25,34 @@ class Node:
     def __hash__(self):
         return hash(self.position)
 
-    def get_children(self, end_node, weight: float, **kwargs): # todo: remove graph parameter & add the Weighted W
+    def get_children(self, maze, end_node):
         children = []
+        for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:  # Adjacent squares
 
+            # Get node position
+            node_position = (self.position[0] + new_position[0], self.position[1] + new_position[1])
+
+            # Make sure within range
+            if node_position[1] > (len(maze) - 1) or node_position[1] < 0 or\
+                    node_position[0] > (len(maze[len(maze) - 1]) - 1) or node_position[0] < 0:
+                continue
+
+            # Make sure walkable terrain
+            if maze[node_position[1]][node_position[0]] != 0:
+                continue
+
+            # Create new node
+            new_node = Node(self, node_position)
+            if new_position in [(-1, -1), (-1, 1), (1, -1), (1, 1)]:
+                new_node.g = self.g + math.sqrt(2)
+            else:
+                new_node.g = self.g + 1
+            euclidean_distance = math.sqrt((new_node.position[0] - end_node.position[0]) ** 2 + (new_node.position[1] - end_node.position[1]) ** 2)
+            new_node.h = euclidean_distance
+            new_node.f = new_node.g + new_node.h
+
+            # Append
+            children.append(new_node)
         return children
 
 
