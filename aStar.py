@@ -2,6 +2,7 @@ import math
 import time
 from heapq import heappush, heappop
 import queue as Q
+import copy
 
 
 class Node:
@@ -25,7 +26,7 @@ class Node:
     def __hash__(self):
         return hash(self.position)
 
-    def get_children(self, maze, end_node,weight):
+    def get_children(self, maze, end_node,weight, pure_h):
         children = []
         for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:  # Adjacent squares
 
@@ -33,8 +34,7 @@ class Node:
             node_position = (self.position[0] + new_position[0], self.position[1] + new_position[1])
 
             # Make sure within range
-            if node_position[1] > (len(maze) - 1) or node_position[1] < 0 or\
-                    node_position[0] > (len(maze[len(maze) - 1]) - 1) or node_position[0] < 0:
+            if node_position[1] > (len(maze) - 1) or node_position[1] < 0 or node_position[0] > (len(maze[len(maze) - 1]) - 1) or node_position[0] < 0:
                 continue
 
             # Make sure walkable terrain
@@ -49,18 +49,23 @@ class Node:
                 new_node.g = self.g + 1
             euclidean_distance = math.sqrt((new_node.position[0] - end_node.position[0]) ** 2 + (new_node.position[1] - end_node.position[1]) ** 2)
             new_node.h = weight * euclidean_distance
-            new_node.f = new_node.g + new_node.h
 
+            # calculate f with regards to pure search
+            if not pure_h:
+                new_node.f = new_node.g + new_node.h
+            else:
+                new_node.f = new_node.h
             # Append
             children.append(new_node)
         return children
 
 
-def aStar(maze, start, end, weight, **kwargs):
+def aStar(maze, start, end, weight, pure_h=False):
     total_nodes_expanded = 0
     total_nodes_generated = 0
 
-    def solution_path(current_node, maze):
+    def solution_path(current_node, maze, total_nodes_expanded, total_nodes_generated):
+        maze = copy.deepcopy(maze)
 
         path_cost = current_node.g
         path = []
@@ -73,7 +78,7 @@ def aStar(maze, start, end, weight, **kwargs):
         if maze is not None:
             for point in path:
                 maze[point[1]][point[0]] = 2
-        return path[::-1], path_cost  # Return reversed path
+        return path[::-1], path_cost, total_nodes_expanded, total_nodes_generated # Return reversed path
     # Create start and end node
     # start_node = Node(None, start)
     # start_node.h = euclidean_distance(start, end)
@@ -101,10 +106,10 @@ def aStar(maze, start, end, weight, **kwargs):
         # Found the goal
         if current_node.position == end.position:
             # todo return solution path size, and how many nodes were expanded
-            return (solution_path(current_node, maze),total_nodes_expanded,total_nodes_generated)
+            return solution_path(current_node, maze ,total_nodes_expanded,total_nodes_generated)
         # Generate children
         total_nodes_expanded = total_nodes_expanded + 1
-        children = current_node.get_children(maze=maze, weight=weight, end_node=end)
+        children = current_node.get_children(maze=maze, weight=weight, end_node=end, pure_h=pure_h)
         # Loop through children
         for child in children:
             # Child is on the closed list
