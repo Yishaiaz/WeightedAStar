@@ -25,7 +25,7 @@ class Node:
     def __hash__(self):
         return hash(self.position)
 
-    def get_children(self, maze, end_node):
+    def get_children(self, maze, end_node,weight):
         children = []
         for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:  # Adjacent squares
 
@@ -48,7 +48,7 @@ class Node:
             else:
                 new_node.g = self.g + 1
             euclidean_distance = math.sqrt((new_node.position[0] - end_node.position[0]) ** 2 + (new_node.position[1] - end_node.position[1]) ** 2)
-            new_node.h = euclidean_distance
+            new_node.h = weight * euclidean_distance
             new_node.f = new_node.g + new_node.h
 
             # Append
@@ -57,8 +57,11 @@ class Node:
 
 
 def aStar(maze, start, end, weight, **kwargs):
+    total_nodes_expanded = 0
+    total_nodes_generated = 0
 
     def solution_path(current_node, maze):
+
         path_cost = current_node.g
         path = []
         current = current_node
@@ -98,9 +101,10 @@ def aStar(maze, start, end, weight, **kwargs):
         # Found the goal
         if current_node.position == end.position:
             # todo return solution path size, and how many nodes were expanded
-            return solution_path(current_node, maze)
+            return (solution_path(current_node, maze),total_nodes_expanded,total_nodes_generated)
         # Generate children
-        children = current_node.get_children(maze=maze, end_node=end)
+        total_nodes_expanded = total_nodes_expanded + 1
+        children = current_node.get_children(maze=maze, weight=weight, end_node=end)
         # Loop through children
         for child in children:
             # Child is on the closed list
@@ -113,10 +117,12 @@ def aStar(maze, start, end, weight, **kwargs):
                 if child.g < dup_child.g:
                     open_list.pop((dup_child))
                     open_list_queue.put(child)
+                    total_nodes_generated = total_nodes_generated + 1
             # Add the child to the open list
             else:
                 open_list_queue.put(child)
                 open_list[(child)] = child
+                total_nodes_generated = total_nodes_generated + 1
 
 
 def make_maze_from_file(map_file):
