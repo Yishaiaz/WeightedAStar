@@ -56,28 +56,23 @@ class Node:
         return children
 
 
-def solution_path(current_node, maze): # todo: remove graph parameter
-    path_cost = current_node.g
-    path = []
-    current = current_node
-    # while current is not None:
-    #     path.append((current.position[0], current.position[1]))
-    #     if maze is not None:
-    #         maze[current.position[1]][current.position[0]] = 2
-    #         if current.parent is not None:
-    #             # sub_path = graph[current.parent.position][current.position]['path'][1:-1][::-1]
-    #             # for point in sub_path:
-    #             #     path.append(point)
-    #     current = current.parent
-    # if maze is not None:
-    #     for point in path:
-    #         maze[point[1]][point[0]] = 2
-    # print(path_cost)
-    return path[::-1]  # Return reversed path
-    # return path_cost
-
-
 def aStar(maze, start, end, weight, **kwargs):
+
+    def solution_path(current_node, maze):
+        path_cost = current_node.g
+        path = []
+        current = current_node
+        while current is not None:
+            path.append((current.position[0], current.position[1]))
+            if maze is not None:
+                maze[current.position[1]][current.position[0]] = 2
+                if current.parent is not None:
+                    path.append(current.parent.position)
+            current = current.parent
+        if maze is not None:
+            for point in path:
+                maze[point[1]][point[0]] = 2
+        return path[::-1], path_cost  # Return reversed path
     # Create start and end node
     # start_node = Node(None, start)
     # start_node.h = euclidean_distance(start, end)
@@ -104,9 +99,10 @@ def aStar(maze, start, end, weight, **kwargs):
         closed_list.append(current_node)
         # Found the goal
         if current_node.position == end.position:
+            # todo return solution path size, and how many nodes were expanded
             return solution_path(current_node, maze)
         # Generate children
-        children = current_node.get_children(end)
+        children = current_node.get_children(maze=maze, end_node=end)
         # Loop through children
         for child in children:
             # Child is on the closed list
@@ -123,8 +119,6 @@ def aStar(maze, start, end, weight, **kwargs):
             else:
                 open_list_queue.put(child)
                 open_list[(child)] = child
-
-    # todo return solution path size, and how many nodes were expanded
 
 
 def make_maze_from_file(map_file):
