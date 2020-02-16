@@ -66,8 +66,6 @@ def aStar(maze, start, end, weight, **kwargs):
             path.append((current.position[0], current.position[1]))
             if maze is not None:
                 maze[current.position[1]][current.position[0]] = 2
-                if current.parent is not None:
-                    path.append(current.parent.position)
             current = current.parent
         if maze is not None:
             for point in path:
