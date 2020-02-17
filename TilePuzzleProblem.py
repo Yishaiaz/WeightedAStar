@@ -1,35 +1,52 @@
 import numpy as np
-from random import randint
+from random import randint, shuffle
+import math
 from functools import reduce
 from aStar import Node, aStar
 
 
 class Tray:
-    max_size_of_pancake = 20
-    min_size_of_pancake = 1
 
-    def __init__(self, pancakes: np.ndarray = None, number_of_pancakes: int=3):
-        if pancakes is None:
-            self.pancakes = np.zeros((number_of_pancakes))
-            for i in range(len(self.pancakes)):
-                self.pancakes[i] = randint(self.min_size_of_pancake, self.max_size_of_pancake)
+    def __init__(self, tiles: np.ndarray = None, number_of_tiles: int=16):
+        """
+        number of tiles must be a power of 2!
+        empty tile is assigned the value -1
+        :param tiles:
+        :param number_of_tiles:
+        """
+        x = 0
+        if tiles is None:
+            tiles_per_row = int(math.sqrt(number_of_tiles))
+            self.tiles = np.zeros((tiles_per_row, tiles_per_row))
+            for i in range(0, len(self.tiles)):
+                tiles_len = len(self.tiles[0])
+                for j in range(0, tiles_len):
+                    if i == 0 and j == 0:
+                        self.tiles[i][j] = -1
+                        continue
+                    self.tiles[i][j] = x
+                    x += 1
+            np.random.shuffle(self.tiles)
         else:
-            self.pancakes = pancakes
+            self.tiles = tiles
 
     def __hash__(self):
-        return hash(tuple(self.pancakes))
+        return hash(tuple(self.tiles))
+
+    def __repr__(self):
+        return "\n".join(["|{0}|".format(",".join(["{0},".format(word)for word in line])) for line in self.tiles])
 
     def __eq__(self, other):
-        return reduce(lambda x, y: x*y, [self.pancakes[i] == other.pancakes[i] for i in range(len(self.pancakes))])
+        return reduce(lambda x, y: x*y, [self.tiles[i] == other.pancakes[i] for i in range(len(self.tiles))])
 
 
 def get_goal_tray(tray: Tray):
-    pancakes = tray.pancakes
-    return Tray(pancakes=np.sort(pancakes, kind='mergesort')[::-1])
+    pancakes = tray.tiles
+    return Tray(tiles=np.sort(pancakes, kind='mergesort')[::-1])
 
 
 def get_h(tray: Tray, end_node: Node):
-    this_tray_pancakes = tray.pancakes
+    this_tray_pancakes = tray.tiles
     goal_tray_pancakes = end_node.position.pancakes
     h = 0
     for k, v in enumerate(goal_tray_pancakes):
@@ -66,12 +83,12 @@ class PancakeNode(Node):
             return reduce(lambda x, y: x*y, [self.position.pancakes[i]==other.position.pancakes[i] for i in range(len(self.position.pancakes))])
         return False
 
-    def get_children(self, maze: Tray, end_node, weight, pure_h=False):
+    def get_children(self, maze: Tray, end_node, weight, pure_h):
         children = []
         for i in range(len(self.position.pancakes)-1):
             new_pancake_order = np.copy(self.position.pancakes)
             new_pancake_order[i:] = new_pancake_order[i:][::-1]
-            new_tray = Tray(pancakes=new_pancake_order, number_of_pancakes=0)
+            new_tray = Tray(tiles=new_pancake_order, number_of_tiles=0)
             child = PancakeNode(parent=self, position=new_tray)
             # todo change h and g and f
             child.g = self.g + 1
@@ -88,9 +105,10 @@ class PancakeNode(Node):
 
 
 
-starting_tray = Tray(None, 8)
-goal_tray = get_goal_tray(starting_tray)
-starting_node = PancakeNode(parent=None, position=starting_tray)
-goal_node = PancakeNode(parent=None, position=goal_tray)
-path, path_cost, total_nodes_expanded, total_nodes_generated = aStar(maze=starting_tray, start=starting_node, end=goal_node, weight=5, pure_h=False, sol_path_func=solution_path)
-print("path cost: {0}, total expanded: {1}, total generated: {2}".format(path_cost, total_nodes_expanded, total_nodes_generated))
+starting_tray = Tray(None, 16)
+print(starting_tray)
+# goal_tray = get_goal_tray(starting_tray)
+# starting_node = PancakeNode(parent=None, position=starting_tray)
+# goal_node = PancakeNode(parent=None, position=goal_tray)
+# path, path_cost, total_nodes_expanded, total_nodes_generated = aStar(maze=starting_tray, start=starting_node, end=goal_node, weight=2, pure_h=False, sol_path_func=solution_path)
+# print(total_nodes_expanded)

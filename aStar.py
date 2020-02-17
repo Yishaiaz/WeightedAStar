@@ -26,7 +26,7 @@ class Node:
     def __hash__(self):
         return hash(self.position)
 
-    def get_children(self, maze, end_node,weight):
+    def get_children(self, maze, end_node, weight):
         children = []
         for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:  # Adjacent squares
 
@@ -61,9 +61,6 @@ class Node:
 
     def __repr__(self):
         return "row={},col={}".format(self.position[1],self.position[0])
-def aStar(maze, start, end, weight, pure_h=False):
-    total_nodes_expanded = 0
-    total_nodes_generated = 0
 
     def solution_path(current_node, maze, total_nodes_expanded, total_nodes_generated):
         maze = copy.deepcopy(maze)
@@ -80,6 +77,29 @@ def aStar(maze, start, end, weight, pure_h=False):
             for point in path:
                 maze[point[1]][point[0]] = 2
         return path[::-1], path_cost, total_nodes_expanded, total_nodes_generated # Return reversed path
+
+
+def solution_path(current_node, maze, total_nodes_expanded, total_nodes_generated):
+    maze = copy.deepcopy(maze)
+
+    path_cost = current_node.g
+    path = []
+    current = current_node
+    while current is not None:
+        path.append((current.position[0], current.position[1]))
+        if maze is not None:
+            maze[current.position[1]][current.position[0]] = 2
+        current = current.parent
+    if maze is not None:
+        for point in path:
+            maze[point[1]][point[0]] = 2
+    return path[::-1], path_cost, total_nodes_expanded, total_nodes_generated # Return reversed path
+
+
+def aStar(maze, start, end, weight, pure_h=False, sol_path_func=solution_path):
+    total_nodes_expanded = 0
+    total_nodes_generated = 0
+
     # Create start and end node
     # start_node = Node(None, start)
     # start_node.h = euclidean_distance(start, end)
@@ -107,7 +127,7 @@ def aStar(maze, start, end, weight, pure_h=False):
         # Found the goal
         if current_node.position == end.position:
             # todo return solution path size, and how many nodes were expanded
-            return solution_path(current_node, maze ,total_nodes_expanded,total_nodes_generated)
+            return sol_path_func(current_node, maze ,total_nodes_expanded,total_nodes_generated)
         # Generate children
         total_nodes_expanded = total_nodes_expanded + 1
         children = current_node.get_children(maze=maze, weight=weight, end_node=end)
