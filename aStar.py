@@ -59,7 +59,8 @@ class Node:
             children.append(new_node)
         return children
 
-
+    def __repr__(self):
+        return "x={},y={}".format(self.position[0],self.position[1])
 def aStar(maze, start, end, weight, pure_h=False):
     total_nodes_expanded = 0
     total_nodes_generated = 0
