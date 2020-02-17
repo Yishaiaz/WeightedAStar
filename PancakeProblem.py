@@ -22,6 +22,7 @@ class Tray:
     def __eq__(self, other):
         return reduce(lambda x, y: x*y, [self.pancakes[i] == other.pancakes[i] for i in range(len(self.pancakes))])
 
+
 def get_goal_tray(tray: Tray):
     pancakes = tray.pancakes
     return Tray(pancakes=np.sort(pancakes, kind='mergesort')[::-1])
@@ -35,6 +36,15 @@ def get_h(tray: Tray, end_node: Node):
         if v != this_tray_pancakes[k]:
             h += 1
     return h
+
+
+def solution_path(current_node, maze, total_nodes_expanded, total_nodes_generated):
+    path = []
+    while(current_node!=None):
+        path.append(current_node)
+        current_node = current_node.parent
+    path_cost = len(path)
+    return path[::-1], path_cost, total_nodes_expanded, total_nodes_generated
 
 
 class PancakeNode(Node):
@@ -52,19 +62,24 @@ class PancakeNode(Node):
         return hash((self.position))
 
     def __eq__(self, other):
-        return reduce(lambda x, y: x*y, [self.position.pancakes[i]==other.position.pancakes[i] for i in range(len(self.position.pancakes))])
+        if type(other) == type(self):
+            return reduce(lambda x, y: x*y, [self.position.pancakes[i]==other.position.pancakes[i] for i in range(len(self.position.pancakes))])
+        return False
 
     def get_children(self, maze: Tray, end_node, weight, pure_h):
         children = []
-        for i in range(len(maze.pancakes)-1):
-            new_pancake_order = np.copy(maze.pancakes)
-            new_pancake_order[i:] = maze.pancakes[i:][::-1]
+        for i in range(len(self.position.pancakes)-1):
+            new_pancake_order = np.copy(self.position.pancakes)
+            new_pancake_order[i:] = new_pancake_order[i:][::-1]
             new_tray = Tray(pancakes=new_pancake_order, number_of_pancakes=0)
             child = PancakeNode(parent=self, position=new_tray)
             # todo change h and g and f
             child.g = self.g + 1
             child.h = weight * get_h(child.position, end_node)
-            child.f += child.g + child.h
+            if not pure_h:
+                child.f = child.g + child.h
+            else:
+                child.f = child.h
             children.append(child)
         return children
 
@@ -73,8 +88,9 @@ class PancakeNode(Node):
 
 
 
-starting_tray = Tray(None, 3)
+starting_tray = Tray(None, 9)
 goal_tray = get_goal_tray(starting_tray)
 starting_node = PancakeNode(parent=None, position=starting_tray)
 goal_node = PancakeNode(parent=None, position=goal_tray)
-sol_path = aStar(maze=starting_tray, start=starting_node, end=goal_node, weight=1, pure_h=False)
+path, path_cost, total_nodes_expanded, total_nodes_generated = aStar(maze=starting_tray, start=starting_node, end=goal_node, weight=1, pure_h=False, sol_path_func=solution_path)
+print(path)
