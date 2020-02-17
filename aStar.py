@@ -26,7 +26,8 @@ class Node:
     def __hash__(self):
         return hash(self.position)
 
-    def get_children(self, maze, end_node, weight):
+    def get_children(self, maze, end_node, weight, pure_h=False):
+        # print("pure: 3 " + str(pure_h))
         children = []
         for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:  # Adjacent squares
 
@@ -48,13 +49,15 @@ class Node:
             else:
                 new_node.g = self.g + 1
             euclidean_distance = math.sqrt((new_node.position[0] - end_node.position[0]) ** 2 + (new_node.position[1] - end_node.position[1]) ** 2)
-            new_node.h = weight * euclidean_distance
+
 
             # calculate f with regards to pure search
-            # if not pure_h:
-            new_node.f = new_node.g + new_node.h
-            # else:
-            #     new_node.f = new_node.h
+            if not pure_h:
+                new_node.h = weight * euclidean_distance
+                new_node.f = new_node.g + new_node.h
+            else:
+                new_node.h = euclidean_distance
+                new_node.f = new_node.h
             # Append
             children.append(new_node)
         return children
@@ -96,7 +99,7 @@ def solution_path(current_node, maze, total_nodes_expanded, total_nodes_generate
     return path[::-1], path_cost, total_nodes_expanded, total_nodes_generated # Return reversed path
 
 
-def aStar(maze, start, end, weight, pure_h=False, sol_path_func=solution_path):
+def aStar(maze, start, end, weight, sol_path_func=solution_path, pure=False):
     total_nodes_expanded = 0
     total_nodes_generated = 0
 
@@ -130,7 +133,7 @@ def aStar(maze, start, end, weight, pure_h=False, sol_path_func=solution_path):
             return sol_path_func(current_node, maze ,total_nodes_expanded,total_nodes_generated)
         # Generate children
         total_nodes_expanded = total_nodes_expanded + 1
-        children = current_node.get_children(maze=maze, weight=weight, end_node=end)
+        children = current_node.get_children(maze=maze, weight=weight, end_node=end, pure_h=pure)
         # Loop through children
         for child in children:
             # Child is on the closed list
