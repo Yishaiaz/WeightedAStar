@@ -3,7 +3,7 @@ height 9
 width 17
 map
 ...........TTTTTT
-TTTTTT.....TTTTTT
+.TTTTT.....TTTTTT
 TTTTTT.....TTTTTT
 TTTTTT.....TTTTTT
 .................
