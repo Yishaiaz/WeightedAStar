@@ -75,9 +75,9 @@ def run_weighted_AStar(domain, map, start, end, weight, map_name, point_iteratio
 def iteritive_W_AStar(start,end,graph,point_iteration, map_name):
     for W in range(1,101):
         ans = run_weighted_AStar('maze', graph, start, end, W, map_name, point_iteration)
+        print(W)
         if ans == None:
-            all_data.append(["FAIL"])
-            continue
+            return
         all_data.append(ans)
     return
 
