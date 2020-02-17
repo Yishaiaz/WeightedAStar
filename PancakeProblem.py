@@ -73,7 +73,6 @@ class PancakeNode(Node):
             new_pancake_order[i:] = new_pancake_order[i:][::-1]
             new_tray = Tray(pancakes=new_pancake_order, number_of_pancakes=0)
             child = PancakeNode(parent=self, position=new_tray)
-            # todo change h and g and f
             child.g = self.g + 1
             child.h = weight * get_h(child.position, end_node)
             if not pure_h:
@@ -92,5 +91,5 @@ starting_tray = Tray(None, 8)
 goal_tray = get_goal_tray(starting_tray)
 starting_node = PancakeNode(parent=None, position=starting_tray)
 goal_node = PancakeNode(parent=None, position=goal_tray)
-path, path_cost, total_nodes_expanded, total_nodes_generated = aStar(maze=starting_tray, start=starting_node, end=goal_node, weight=5, pure_h=False, sol_path_func=solution_path)
+path, path_cost, total_nodes_expanded, total_nodes_generated = aStar(maze=starting_tray, start=starting_node, end=goal_node, weight=5, pure=False, sol_path_func=solution_path)
 print("path cost: {0}, total expanded: {1}, total generated: {2}".format(path_cost, total_nodes_expanded, total_nodes_generated))

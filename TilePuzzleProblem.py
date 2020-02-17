@@ -4,8 +4,10 @@ import math
 from functools import reduce
 from aStar import Node, aStar
 
+MOVES = ["UP", "RIGHT", "DOWN", "LEFT"]
 
-class Tray:
+
+class TrayTilePuzzle:
 
     def __init__(self, tiles: np.ndarray = None, number_of_tiles: int=16):
         """
@@ -26,33 +28,80 @@ class Tray:
                         continue
                     self.tiles[i][j] = x
                     x += 1
-            np.random.shuffle(self.tiles)
+            self.shuffle_tiles()
+            # np.random.shuffle(shuffled)
+            # self.tiles = shuffled
         else:
             self.tiles = tiles
 
+    def shuffle_tiles(self):
+        number_of_moves = 100000
+        random_moves = np.random.randint(0, 3, number_of_moves)
+        last_move = None
+        for move in random_moves:
+            if last_move is not None and 2-last_move == move:
+                continue
+            move_sign = MOVES[move]
+            tiles_after_move = move_tile(self.tiles, move_sign)
+            if tiles_after_move is None:
+                continue
+            else:
+                self.tiles = tiles_after_move
+                last_move = move
+
     def __hash__(self):
-        return hash(tuple(self.tiles))
+        return hash(self.tiles.tostring())
 
     def __repr__(self):
         return "\n".join(["|{0}|".format(",".join(["{0},".format(word)for word in line])) for line in self.tiles])
 
     def __eq__(self, other):
-        return reduce(lambda x, y: x*y, [self.tiles[i] == other.pancakes[i] for i in range(len(self.tiles))])
+        if type(other) == type(self):
+            return np.array_equal(self.tiles, other.tiles)
+        return False
 
 
-def get_goal_tray(tray: Tray):
-    pancakes = tray.tiles
-    return Tray(tiles=np.sort(pancakes, kind='mergesort')[::-1])
+def move_tile(tiles_puzzle: np.ndarray, move: str):
+    tiles = np.copy(tiles_puzzle)
+    blank_tile_location = np.where(tiles == -1)
+    blank_tile_x = blank_tile_location[0][0]
+    blank_tile_y = blank_tile_location[1][0]
+    if move == "UP":
+        if blank_tile_x - 1 >= 0:
+            tiles[blank_tile_x][blank_tile_y] = tiles[blank_tile_x - 1][blank_tile_y]
+            tiles[blank_tile_x - 1][blank_tile_y] = -1
+            return tiles
+    elif move == "RIGHT":
+        if blank_tile_y + 1 < len(tiles):
+            tiles[blank_tile_x][blank_tile_y] = tiles[blank_tile_x][blank_tile_y + 1]
+            tiles[blank_tile_x][blank_tile_y + 1] = -1
+            return tiles
+    elif move == "DOWN":
+        if blank_tile_x + 1 < len(tiles[0]):
+            tiles[blank_tile_x][blank_tile_y] = tiles[blank_tile_x + 1][blank_tile_y]
+            tiles[blank_tile_x + 1][blank_tile_y] = -1
+            return tiles
+    elif move == "LEFT":
+        if blank_tile_y - 1 >= 0:
+            tiles[blank_tile_x][blank_tile_y] = tiles[blank_tile_x][blank_tile_y - 1]
+            tiles[blank_tile_x][blank_tile_y - 1] = -1
+            return tiles
+    return None
 
 
-def get_h(tray: Tray, end_node: Node):
-    this_tray_pancakes = tray.tiles
-    goal_tray_pancakes = end_node.position.pancakes
-    h = 0
-    for k, v in enumerate(goal_tray_pancakes):
-        if v != this_tray_pancakes[k]:
-            h += 1
-    return h
+def get_goal_tray(tray: TrayTilePuzzle):
+    x = 0
+    tiles_per_row = len(tray.tiles)
+    tiles = np.zeros((tiles_per_row, tiles_per_row))
+    for i in range(0, len(tiles)):
+        tiles_len = len(tiles[0])
+        for j in range(0, tiles_len):
+            if i == 0 and j == 0:
+                tiles[i][j] = -1
+                continue
+            tiles[i][j] = x
+            x += 1
+    return TrayTilePuzzle(tiles=tiles)
 
 
 def solution_path(current_node, maze, total_nodes_expanded, total_nodes_generated):
@@ -64,10 +113,9 @@ def solution_path(current_node, maze, total_nodes_expanded, total_nodes_generate
     return path[::-1], path_cost, total_nodes_expanded, total_nodes_generated
 
 
-class PancakeNode(Node):
-
-    def __init__(self, parent=None, position:Tray =None):
-        super(PancakeNode, self).__init__(parent=parent, position=position)
+class TilePuzzleNode(Node):
+    def __init__(self, parent=None, position: TrayTilePuzzle =None):
+        super(TilePuzzleNode, self).__init__(parent=parent, position=position)
 
     def __lt__(self, other):
         if self.f == other.f:
@@ -80,35 +128,54 @@ class PancakeNode(Node):
 
     def __eq__(self, other):
         if type(other) == type(self):
-            return reduce(lambda x, y: x*y, [self.position.pancakes[i]==other.position.pancakes[i] for i in range(len(self.position.pancakes))])
+            return np.array_equal(self.position.tiles, other.position.tiles)
         return False
 
-    def get_children(self, maze: Tray, end_node, weight, pure_h):
+    def get_children(self, maze: TrayTilePuzzle, end_node, weight, pure_h=False):
+        def get_h(tray: TrayTilePuzzle, end_node_: Node, parent_h: float = 0.0):
+            h = 0
+            current_tiles = tray.tiles
+            goal_tiles = end_node_.position.tiles
+            for x in range(len(current_tiles)):
+                for y in range(len(current_tiles[x])):
+                    at_goal_location = np.where(goal_tiles==current_tiles[x][y])
+                    at_goal_location_x = at_goal_location[0][0]
+                    at_goal_location_y = at_goal_location[1][0]
+                    x_dis = (at_goal_location_x - x)**2
+                    y_dis = (at_goal_location_y - y)**2
+                    dis = math.sqrt(x_dis+y_dis)
+                    h+=dis
+            return h
+
         children = []
-        for i in range(len(self.position.pancakes)-1):
-            new_pancake_order = np.copy(self.position.pancakes)
-            new_pancake_order[i:] = new_pancake_order[i:][::-1]
-            new_tray = Tray(tiles=new_pancake_order, number_of_tiles=0)
-            child = PancakeNode(parent=self, position=new_tray)
-            # todo change h and g and f
+        for move in MOVES:
+            child_tiles = move_tile(self.position.tiles, move)
+            if child_tiles is None:
+                continue
+            tile_puzzle_for_child = TrayTilePuzzle(tiles=child_tiles)
+            child = TilePuzzleNode(parent=self, position=tile_puzzle_for_child)
+            if child == self:
+                continue
             child.g = self.g + 1
-            child.h = weight * get_h(child.position, end_node)
-            if not pure_h:
-                child.f = child.g + child.h
-            else:
-                child.f = child.h
+            if self.h != 0:
+                child.h = get_h(tray=tile_puzzle_for_child, end_node_=end_node, parent_h=self.h)
+            child.h = get_h(tray=tile_puzzle_for_child, end_node_=end_node)
+            child.f = child.g + child.h
             children.append(child)
         return children
 
     def __repr__(self):
-        return "".join(["{0}, ".format(x) for x in self.position.pancakes])
+        return "\n".join(["|{0}|".format(",".join(["{0},".format(word)
+                                                   for word in line])) for line in self.position.tiles])
 
 
-
-starting_tray = Tray(None, 16)
-print(starting_tray)
-# goal_tray = get_goal_tray(starting_tray)
-# starting_node = PancakeNode(parent=None, position=starting_tray)
-# goal_node = PancakeNode(parent=None, position=goal_tray)
-# path, path_cost, total_nodes_expanded, total_nodes_generated = aStar(maze=starting_tray, start=starting_node, end=goal_node, weight=2, pure_h=False, sol_path_func=solution_path)
-# print(total_nodes_expanded)
+starting_tray = TrayTilePuzzle(None, 100)
+starting_node = TilePuzzleNode(parent=None, position=starting_tray)
+end_tray = get_goal_tray(starting_tray)
+goal_node = TilePuzzleNode(parent=None, position=end_tray)
+print(starting_node)
+print("\n")
+# starting_node.get_children(starting_tray, end_node, 1)
+print(goal_node)
+path, path_cost, total_nodes_expanded, total_nodes_generated = aStar(maze=starting_tray, start=starting_node, end=goal_node, weight=3, pure=False, sol_path_func=solution_path)
+print(total_nodes_expanded)

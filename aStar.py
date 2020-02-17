@@ -112,7 +112,7 @@ def aStar(maze, start, end, weight, sol_path_func=solution_path, pure=False):
     # Initialize both open and closed list
     open_list_queue = Q.PriorityQueue()
     open_list = dict()
-    closed_list = []
+    closed_list = dict()
 
     # Add the start node
     # heappush(open_list, start_node)
@@ -126,10 +126,9 @@ def aStar(maze, start, end, weight, sol_path_func=solution_path, pure=False):
             continue
         open_list.pop((current_node))
         # Pop current off open list, add to closed list
-        closed_list.append(current_node)
+        closed_list[(current_node)] = current_node
         # Found the goal
         if current_node.position == end.position:
-            # todo return solution path size, and how many nodes were expanded
             return sol_path_func(current_node, maze ,total_nodes_expanded,total_nodes_generated)
         # Generate children
         total_nodes_expanded = total_nodes_expanded + 1
@@ -137,7 +136,7 @@ def aStar(maze, start, end, weight, sol_path_func=solution_path, pure=False):
         # Loop through children
         for child in children:
             # Child is on the closed list
-            if child in closed_list:
+            if (child) in closed_list:
                 continue
 
             # Child is already in the open list
