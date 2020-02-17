@@ -105,7 +105,6 @@ def get_goal_tray(tray: TrayTilePuzzle):
 
 
 def solution_path(current_node, maze, total_nodes_expanded, total_nodes_generated):
-    # todo 2
     path = []
     while(current_node!=None):
         path.append(current_node)

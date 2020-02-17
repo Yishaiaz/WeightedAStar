@@ -129,7 +129,6 @@ def aStar(maze, start, end, weight, sol_path_func=solution_path, pure=False):
         closed_list[(current_node)] = current_node
         # Found the goal
         if current_node.position == end.position:
-            # todo return solution path size, and how many nodes were expanded
             return sol_path_func(current_node, maze ,total_nodes_expanded,total_nodes_generated)
         # Generate children
         total_nodes_expanded = total_nodes_expanded + 1

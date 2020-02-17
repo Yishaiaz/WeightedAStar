@@ -73,7 +73,6 @@ class PancakeNode(Node):
             new_pancake_order[i:] = new_pancake_order[i:][::-1]
             new_tray = Tray(pancakes=new_pancake_order, number_of_pancakes=0)
             child = PancakeNode(parent=self, position=new_tray)
-            # todo change h and g and f
             child.g = self.g + 1
             child.h = weight * get_h(child.position, end_node)
             if not pure_h:
