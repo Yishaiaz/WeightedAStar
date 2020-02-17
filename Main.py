@@ -39,9 +39,9 @@ def validPoint(x,y,graph):
     return True
 
 
-def run_weighted_AStar(domain, map, start, end, weight, map_name, point_iteration,):
+def run_weighted_AStar(domain, map, start, end, weight, map_name, point_iteration, pure=False):
     try:
-        sol_path, path_cost, num_of_expan_nodes, num_of_gen_nodes = aStar.aStar(map, start, end, weight)
+        sol_path, path_cost, num_of_expan_nodes, num_of_gen_nodes = aStar.aStar(map, start, end, weight,pure=pure)
 
 
         listing = list()
@@ -59,28 +59,31 @@ def run_weighted_AStar(domain, map, start, end, weight, map_name, point_iteratio
         print("Fail!")
         return None
 
-    # data[weight] = {}
-    # data[weight]["path_len"] = len(sol_path)
-    # data[weight]["start"] = start
-    # data[weight]["end"] = end
-    # data[weight]["num_of_gen_nodes"] = num_of_gen_nodes
-    # data[weight]["num_of_expan_nodes"] = num_of_expan_nodes
-    # data[weight]["domain"] = domain
-    # data[weight]["map_name"] = map_name
-    # data[weight]["point_iteration"] = point_iteration
     return listing
 
 
 
 def iteritive_W_AStar(start,end,graph,point_iteration, map_name):
+    pure_huristic = run_weighted_AStar('maze', graph, start, end, 1, map_name, point_iteration, True )
+    print("pure huristic length = " + str(pure_huristic[len(pure_huristic)-3]) +", expanded: " + str(pure_huristic[len(pure_huristic) - 1]) )
     for W in range(1,101):
         ans = run_weighted_AStar('maze', graph, start, end, W, map_name, point_iteration)
         if ans == None:
-            all_data.append(["FAIL"])
-            continue
+            return
+        print("W: " + str(W) + ", solution length: " + str(ans[len(ans) - 3]) +", expanded: " + str(ans[len(ans) - 1]))
+
+
         all_data.append(ans)
+
+        if isSameResult(ans,pure_huristic):
+            return;
     return
 
+def isSameResult(first,second):
+    if first[len(first)-1] == second[len(second)-1] and first[len(first)-3] == second[len(second)-3]:
+        return True
+    # print(str(first[len(first)-1]) + " != " + str(second[len(second)-1]) + ", or " + str(first[len(first)-3]) + " != " + str(second[len(second)-3] ))
+    return False
 
 def run_on_map(map_file,file_name):
 
@@ -129,5 +132,5 @@ def reset_all_data():
 
 map_directory = "/Users/yanivleedon/Desktop/university/adir/WeightedAStar/maps"
 # run_all_maps(map_directory)
-# run_single_map("arena.map",map_directory)
-run_all_maps(map_directory)
+run_single_map("den011d.map",map_directory)
+# run_all_maps(map_directory)
