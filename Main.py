@@ -4,6 +4,8 @@ from aStar import Node
 import os
 import random
 import csv
+from tkinter import *
+import GUI
 # lines_for_csv="domain, run_id, start position," \
 #               " end position, weight, solution size, number of generated nodes," \
 #               "number of expanded nodes  \n "
@@ -51,7 +53,7 @@ def run_weighted_AStar(domain, map, start, end, weight, map_name, point_iteratio
         listing.append(start)
         listing.append(end)
         listing.append(weight)
-        listing.append(len(sol_path))
+        listing.append(path_cost)
         listing.append(num_of_gen_nodes)
         listing.append(num_of_expan_nodes)
 
@@ -129,8 +131,42 @@ def reset_all_data():
     all_data.append(
         ["domain", "map_name", "random_point_iteration", "start_position", "end_position", "wight", "solution_size",
          "num_of_gen_nodes", "num_of_expanded_nodes"])
+def test_gui(file_name,directory):
+    reset_all_data()
+    map_file = open(directory + "/" + file_name, "r")
+    graph = aStar.make_maze_from_file(map_file)
+    start = Node(None, position=(177, 42))
+    end = Node(None, position=(64, 98))
+
+    # row = 42, col = 177
+    # ","
+    # row = 98, col = 64
+    # "
+    # start, end = get_random_points(graph)
+
+    print(graph[start.position[1]][start.position[0]])
+    print(graph[end.position[1]][end.position[0]])
+    W = 1
+    print("running ASTAR")
+    sol_path, path_cost, num_of_expan_nodes, num_of_gen_nodes = aStar.aStar(graph, start, end, W)
+    print("solution length: " + str(path_cost))
+    paintPath(start,end,graph,sol_path)
+
+    root = Tk()
+    my_gui = GUI.CellGrid(root, len(graph), len(graph[0]), 7, graph)
+    root.mainloop()
+
+def paintPath(start,end,graph,sol_path):
+    graph[start.position[1]][start.position[0]] = 2
+    graph[end.position[1]][end.position[0]] = 3
+    for node in sol_path:
+        graph[node[1]][node[0]] = 6
+
+
 
 map_directory = "/Users/yanivleedon/Desktop/university/adir/WeightedAStar/maps"
 # run_all_maps(map_directory)
-run_single_map("den011d.map",map_directory)
+# run_single_map("den011d.map",map_directory)
+test_gui("den011d.map",map_directory)
 # run_all_maps(map_directory)
+
