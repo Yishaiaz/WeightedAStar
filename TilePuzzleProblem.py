@@ -158,9 +158,12 @@ class TilePuzzleNode(Node):
                 continue
             child.g = self.g + 1
             if self.h != 0:
-                child.h = get_h(tray=tile_puzzle_for_child, end_node_=end_node, parent_h=self.h)
-            child.h = get_h(tray=tile_puzzle_for_child, end_node_=end_node)
-            child.f = child.g + child.h
+                child.h = weight * get_h(tray=tile_puzzle_for_child, end_node_=end_node, parent_h=self.h)
+            child.h = weight * get_h(tray=tile_puzzle_for_child, end_node_=end_node)
+            if not pure_h:
+                child.f = child.g + child.h
+            else:
+                child.f = child.h / weight
             children.append(child)
         return children
 

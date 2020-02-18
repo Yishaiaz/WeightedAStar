@@ -29,7 +29,7 @@ class Node:
     def get_children(self, maze, end_node, weight, pure_h=False):
         # print("pure: 3 " + str(pure_h))
         children = []
-        for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:  # Adjacent squares
+        for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0)]:  # Adjacent squares
 
             # Get node position
             node_position = (self.position[0] + new_position[0], self.position[1] + new_position[1])
