@@ -88,9 +88,9 @@ class PancakeNode(Node):
 
 
 
-starting_tray = Tray(None, 8)
-goal_tray = get_goal_tray(starting_tray)
-starting_node = PancakeNode(parent=None, position=starting_tray)
-goal_node = PancakeNode(parent=None, position=goal_tray)
-path, path_cost, total_nodes_expanded, total_nodes_generated = aStar(maze=starting_tray, start=starting_node, end=goal_node, weight=5, pure=False, sol_path_func=solution_path)
-print("path cost: {0}, total expanded: {1}, total generated: {2}".format(path_cost, total_nodes_expanded, total_nodes_generated))
+# starting_tray = Tray(None, 8)
+# goal_tray = get_goal_tray(starting_tray)
+# starting_node = PancakeNode(parent=None, position=starting_tray)
+# goal_node = PancakeNode(parent=None, position=goal_tray)
+# path, path_cost, total_nodes_expanded, total_nodes_generated = aStar(maze=starting_tray, start=starting_node, end=goal_node, weight=5, pure=False, sol_path_func=solution_path)
+# print("path cost: {0}, total expanded: {1}, total generated: {2}".format(path_cost, total_nodes_expanded, total_nodes_generated))
