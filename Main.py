@@ -68,10 +68,13 @@ def run_weighted_AStar(domain, map, start, end, weight, map_name, point_iteratio
 
 
 def iteritive_W_AStar(domain, start,end,graph,point_iteration, map_name,solution_path=aStar.solution_path):
-    pure_huristic = run_weighted_AStar(domain, graph, start, end, 1, map_name, point_iteration, True, sol_func=solution_path)
+    # pure_huristic = run_weighted_AStar(domain, graph, start, end, 1, map_name, point_iteration, True, sol_func=solution_path)
+    pure_huristic = run_weighted_AStar(domain, graph, start, end, 100, map_name, point_iteration, False, sol_func=solution_path)
+
     if not pure_huristic:
         print("no solution")
         return
+    print("map: "+ str(map_name) + ", mutation num: " + str(point_iteration))
     print("pure huristic length = " + str(pure_huristic[len(pure_huristic)-3]) +", expanded: " + str(pure_huristic[len(pure_huristic) - 1]) )
     for W in range(1,101):
         ans = run_weighted_AStar(domain, graph, start, end, W, map_name, point_iteration, sol_func=solution_path)
@@ -168,17 +171,21 @@ def paintPath(start,end,graph,sol_path):
         graph[node[1]][node[0]] = 6
 
 def run_all_pancakes():
-    reset_all_data()
-    for pancake_map in range(7,16):
-        starting_tray = Tray(None, pancake_map)
-        goal_tray = get_goal_tray(starting_tray)
 
-        for mutation in range(1, 30):
+    for pancake_map in range(7,16):
+        reset_all_data()
+        if os.path.isfile('data_'+"pancake_size_"+str(pancake_map)+'.csv'):
+            continue
+
+
+        for mutation in range(1, 31):
+            starting_tray = Tray(None, pancake_map)
+            goal_tray = get_goal_tray(starting_tray)
             starting_node = PancakeNode(parent=None, position=starting_tray)
             goal_node = PancakeNode(parent=None, position=goal_tray)
 
             iteritive_W_AStar("Pancake",starting_node, goal_node, starting_tray, mutation, pancake_map, solution_path)
-        create_csv(all_data, "pnacake_size_"+str(pancake_map))
+        create_csv(all_data, "pancake_size_"+str(pancake_map))
 
         # print("path cost: {0}, total expanded: {1}, total generated: {2}".format(path_cost, total_nodes_expanded, total_nodes_generated))
 
