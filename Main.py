@@ -67,6 +67,9 @@ def run_weighted_AStar(domain, map, start, end, weight, map_name, point_iteratio
 
 def iteritive_W_AStar(start,end,graph,point_iteration, map_name):
     pure_huristic = run_weighted_AStar('maze', graph, start, end, 1, map_name, point_iteration, True )
+    if not pure_huristic:
+        print("no solution")
+        return
     print("pure huristic length = " + str(pure_huristic[len(pure_huristic)-3]) +", expanded: " + str(pure_huristic[len(pure_huristic) - 1]) )
     for W in range(1,101):
         ans = run_weighted_AStar('maze', graph, start, end, W, map_name, point_iteration)
@@ -167,6 +170,6 @@ def paintPath(start,end,graph,sol_path):
 map_directory = "/Users/yanivleedon/Desktop/university/adir/WeightedAStar/maps"
 # run_all_maps(map_directory)
 # run_single_map("den011d.map",map_directory)
-test_gui("den011d.map",map_directory)
-# run_all_maps(map_directory)
+# test_gui("den011d.map",map_directory)
+run_all_maps(map_directory)
 
