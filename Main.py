@@ -69,12 +69,13 @@ def run_weighted_AStar(domain, map, start, end, weight, map_name, point_iteratio
 
 def iteritive_W_AStar(domain, start,end,graph,point_iteration, map_name,solution_path=aStar.solution_path):
     # pure_huristic = run_weighted_AStar(domain, graph, start, end, 1, map_name, point_iteration, True, sol_func=solution_path)
+    print("map: " + str(map_name) + ", mutation num: " + str(point_iteration))
     pure_huristic = run_weighted_AStar(domain, graph, start, end, 100, map_name, point_iteration, False, sol_func=solution_path)
 
     if not pure_huristic:
         print("no solution")
         return
-    print("map: "+ str(map_name) + ", mutation num: " + str(point_iteration))
+
     print("pure huristic length = " + str(pure_huristic[len(pure_huristic)-3]) +", expanded: " + str(pure_huristic[len(pure_huristic) - 1]) )
     for W in range(1,101):
         ans = run_weighted_AStar(domain, graph, start, end, W, map_name, point_iteration, sol_func=solution_path)
@@ -133,6 +134,7 @@ def create_csv(data, file):
         writer = csv.writer(file)
         for listing in data:
             writer.writerow(listing)
+    print("created file: " + 'data_'+file+'.csv' )
 
 def reset_all_data():
     all_data.clear()
