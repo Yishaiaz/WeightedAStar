@@ -6,6 +6,8 @@ import random
 import csv
 from tkinter import *
 import GUI
+from PancakeProblem import Tray, get_goal_tray, PancakeNode, solution_path
+
 # lines_for_csv="domain, run_id, start position," \
 #               " end position, weight, solution size, number of generated nodes," \
 #               "number of expanded nodes  \n "
@@ -41,9 +43,9 @@ def validPoint(x,y,graph):
     return True
 
 
-def run_weighted_AStar(domain, map, start, end, weight, map_name, point_iteration, pure=False):
+def run_weighted_AStar(domain, map, start, end, weight, map_name, point_iteration, pure=False, sol_func= aStar.solution_path):
     try:
-        sol_path, path_cost, num_of_expan_nodes, num_of_gen_nodes = aStar.aStar(map, start, end, weight,pure=pure)
+        sol_path, path_cost, num_of_expan_nodes, num_of_gen_nodes = aStar.aStar(map, start, end, weight,pure=pure, sol_path_func = sol_func)
 
 
         listing = list()
@@ -65,14 +67,14 @@ def run_weighted_AStar(domain, map, start, end, weight, map_name, point_iteratio
 
 
 
-def iteritive_W_AStar(start,end,graph,point_iteration, map_name):
-    pure_huristic = run_weighted_AStar('maze', graph, start, end, 1, map_name, point_iteration, True )
+def iteritive_W_AStar(domain, start,end,graph,point_iteration, map_name,solution_path=aStar.solution_path):
+    pure_huristic = run_weighted_AStar(domain, graph, start, end, 1, map_name, point_iteration, True, sol_func=solution_path)
     if not pure_huristic:
         print("no solution")
         return
     print("pure huristic length = " + str(pure_huristic[len(pure_huristic)-3]) +", expanded: " + str(pure_huristic[len(pure_huristic) - 1]) )
     for W in range(1,101):
-        ans = run_weighted_AStar('maze', graph, start, end, W, map_name, point_iteration)
+        ans = run_weighted_AStar(domain, graph, start, end, W, map_name, point_iteration, sol_func=solution_path)
         if ans == None:
             return
         print("W: " + str(W) + ", solution length: " + str(ans[len(ans) - 3]) +", expanded: " + str(ans[len(ans) - 1]))
@@ -102,7 +104,7 @@ def run_on_map(map_file,file_name):
         start, end = get_random_points(graph)
         print(str(i) + "#, map: " + file_name)
         print(start, end)
-        iteritive_W_AStar(start, end, graph, i, file_name)
+        iteritive_W_AStar("maze",start, end, graph, i, file_name)
 
 
 def run_all_maps(directory):
@@ -165,11 +167,26 @@ def paintPath(start,end,graph,sol_path):
     for node in sol_path:
         graph[node[1]][node[0]] = 6
 
+def run_all_pancakes():
+    reset_all_data()
+    for pancake_map in range(7,16):
+        starting_tray = Tray(None, pancake_map)
+        goal_tray = get_goal_tray(starting_tray)
+
+        for mutation in range(1, 30):
+            starting_node = PancakeNode(parent=None, position=starting_tray)
+            goal_node = PancakeNode(parent=None, position=goal_tray)
+
+            iteritive_W_AStar("Pancake",starting_node, goal_node, starting_tray, mutation, pancake_map, solution_path)
+        create_csv(all_data, "pnacake_size_"+str(pancake_map))
+
+        # print("path cost: {0}, total expanded: {1}, total generated: {2}".format(path_cost, total_nodes_expanded, total_nodes_generated))
+
 
 
 map_directory = "/Users/yanivleedon/Desktop/university/adir/WeightedAStar/maps"
 # run_all_maps(map_directory)
 # run_single_map("den011d.map",map_directory)
 # test_gui("den011d.map",map_directory)
-run_all_maps(map_directory)
-
+# run_all_maps(map_directory)
+run_all_pancakes()
