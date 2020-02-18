@@ -132,6 +132,8 @@ def aStar(maze, start, end, weight, sol_path_func=solution_path, pure=False):
             return sol_path_func(current_node, maze ,total_nodes_expanded,total_nodes_generated)
         # Generate children
         total_nodes_expanded = total_nodes_expanded + 1
+        if total_nodes_expanded % 500000 == 0:
+            print("expanded over {0} Nodes".format(total_nodes_expanded))
         children = current_node.get_children(maze=maze, weight=weight, end_node=end, pure_h=pure)
         # Loop through children
         for child in children:
