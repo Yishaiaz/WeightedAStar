@@ -5,14 +5,15 @@ from aStar import Node, aStar
 
 
 class Tray:
-    max_size_of_pancake = 20
-    min_size_of_pancake = 1
 
     def __init__(self, pancakes: np.ndarray = None, number_of_pancakes: int=3):
         if pancakes is None:
             self.pancakes = np.zeros((number_of_pancakes))
             for i in range(len(self.pancakes)):
-                self.pancakes[i] = randint(self.min_size_of_pancake, self.max_size_of_pancake)
+                self.pancakes[i] = i
+            temp = np.copy(self.pancakes)
+            np.random.shuffle(temp)
+            self.pancakes = temp
         else:
             self.pancakes = pancakes
 
