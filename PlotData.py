@@ -45,29 +45,58 @@ def extract_and_plot_avgs_by_w(data: pd.DataFrame, plot_name_to_save: str = "tes
     plt.show()
     fig.savefig("{0} avgs data.png".format(plot_name_to_save), dpi=300)
 
-# first_data = pd.read_csv("map_data/data_brc000d.map.csv")
+def extract_w_per_domain(domain_map_list:list = []):
+
+    mutation_number = 0
+    avg_expnaded_sum = 0
+    for map_data in domain_map_list:
+        for random_point_iter in map_data['random_point_iteration'].unique():
+            c_star = 1
+            random_point_data = map_data.loc[map_data['random_point_iteration'] == random_point_iter]
+            list_of_sol_per_c_start = []
+            for w_idx in random_point_data['wight'].unique():
+                if w_idx == 1:
+                    c_star = random_point_data[random_point_data['wight'] == w_idx]["solution_size"].values[0]
+                else:
+                    solution_normailized = random_point_data[random_point_data['wight'] == w_idx]["solution_size"].values[0]/c_star
+                    list_of_sol_per_c_start.append(solution_normailized)
+
+            random_point_data['sol / c*'] = list_of_sol_per_c_start
+
+
+
+
+# MAZE
+first_data = pd.read_csv("map_data/data_brc000d.map.csv")
 # extract_and_plot_avgs_by_w(first_data, "first map")
-# second_data = pd.read_csv("map_data/data_brc501d.map.csv")
+second_data = pd.read_csv("map_data/data_brc501d.map.csv")
 # extract_and_plot_avgs_by_w(second_data, "second map")
-# third_data = pd.read_csv("map_data/data_brc505d.map.csv")
+third_data = pd.read_csv("map_data/data_brc505d.map.csv")
 # extract_and_plot_avgs_by_w(third_data, "third map")
-# fourth_data = pd.read_csv("map_data/data_den011d.map.csv")
+fourth_data = pd.read_csv("map_data/data_den011d.map.csv")
 # extract_and_plot_avgs_by_w(fourth_data, "fourth map")
-num = 7
-seven_size_pancake_data = pd.read_csv("pancake_data/data_pancake_size_{0}.csv".format(num))
-extract_and_plot_avgs_by_w(seven_size_pancake_data, "pancake size {0} ".format(num))
-num = 8
-eight_size_pancake_data = pd.read_csv("pancake_data/data_pancake_size_{0}.csv".format(num))
-extract_and_plot_avgs_by_w(eight_size_pancake_data, "pancake size {0} ".format(num))
-num = 9
-nine_size_pancake_data = pd.read_csv("pancake_data/data_pancake_size_{0}.csv".format(num))
-extract_and_plot_avgs_by_w(nine_size_pancake_data, "pancake size {0} ".format(num))
-num = 10
-ten_size_pancake_data = pd.read_csv("pancake_data/data_pancake_size_{0}.csv".format(num))
-extract_and_plot_avgs_by_w(ten_size_pancake_data, "pancake size {0} ".format(num))
-num = 11
-eleven_size_pancake_data = pd.read_csv("pancake_data/data_pancake_size_{0}.csv".format(num))
-extract_and_plot_avgs_by_w(eleven_size_pancake_data, "pancake size {0} ".format(num))
-num = 12
-twelve_size_pancake_data = pd.read_csv("pancake_data/data_pancake_size_{0}.csv".format(num))
-extract_and_plot_avgs_by_w(twelve_size_pancake_data, "pancake size {0} ".format(num))
+a = [first_data, second_data, third_data, fourth_data]
+extract_w_per_domain(a)
+
+
+# PANCAKE
+# num = 7
+# seven_size_pancake_data = pd.read_csv("pancake_data/data_pancake_size_{0}.csv".format(num))
+# extract_and_plot_avgs_by_w(seven_size_pancake_data, "pancake size {0} ".format(num))
+# num = 8
+# eight_size_pancake_data = pd.read_csv("pancake_data/data_pancake_size_{0}.csv".format(num))
+# extract_and_plot_avgs_by_w(eight_size_pancake_data, "pancake size {0} ".format(num))
+# num = 9
+# nine_size_pancake_data = pd.read_csv("pancake_data/data_pancake_size_{0}.csv".format(num))
+# extract_and_plot_avgs_by_w(nine_size_pancake_data, "pancake size {0} ".format(num))
+# num = 10
+# ten_size_pancake_data = pd.read_csv("pancake_data/data_pancake_size_{0}.csv".format(num))
+# extract_and_plot_avgs_by_w(ten_size_pancake_data, "pancake size {0} ".format(num))
+# num = 11
+# eleven_size_pancake_data = pd.read_csv("pancake_data/data_pancake_size_{0}.csv".format(num))
+# extract_and_plot_avgs_by_w(eleven_size_pancake_data, "pancake size {0} ".format(num))
+# num = 12
+# twelve_size_pancake_data = pd.read_csv("pancake_data/data_pancake_size_{0}.csv".format(num))
+# extract_and_plot_avgs_by_w(twelve_size_pancake_data, "pancake size {0} ".format(num))
+
+
