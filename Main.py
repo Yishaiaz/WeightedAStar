@@ -7,7 +7,8 @@ import csv
 from tkinter import *
 import GUI
 from PancakeProblem import Tray, get_goal_tray, PancakeNode, solution_path
-
+import TilePuzzleProblem as tp
+import numpy as np
 # lines_for_csv="domain, run_id, start position," \
 #               " end position, weight, solution size, number of generated nodes," \
 #               "number of expanded nodes  \n "
@@ -45,7 +46,7 @@ def validPoint(x,y,graph):
 
 def run_weighted_AStar(domain, map, start, end, weight, map_name, point_iteration, pure=False, sol_func= aStar.solution_path):
     try:
-        sol_path, path_cost, num_of_expan_nodes, num_of_gen_nodes = aStar.aStar(map, start, end, weight,pure=pure, sol_path_func = sol_func)
+        sol_path, path_cost, num_of_expan_nodes, num_of_gen_nodes = aStar.aStar(map, start, end, weight,pure=pure, sol_path_func=sol_func)
 
 
         listing = list()
@@ -86,8 +87,8 @@ def iteritive_W_AStar(domain, start,end,graph,point_iteration, map_name,solution
 
         all_data.append(ans)
 
-        if isSameResult(ans,pure_huristic):
-            return;
+        # if isSameResult(ans,pure_huristic):
+        #     return;
     return
 
 def isSameResult(first,second):
@@ -134,7 +135,7 @@ def create_csv(data, file):
         writer = csv.writer(file)
         for listing in data:
             writer.writerow(listing)
-    print("created file: " + 'data_'+file+'.csv' )
+    print("created file CSV file")
 
 def reset_all_data():
     all_data.clear()
@@ -191,11 +192,42 @@ def run_all_pancakes():
 
         # print("path cost: {0}, total expanded: {1}, total generated: {2}".format(path_cost, total_nodes_expanded, total_nodes_generated))
 
+def turn_to_str(tray: tp.TrayTilePuzzle):
+    np_array = np.copy(tray.tiles)
+    convert_to_str = lambda x: str(int(x+1)) if x>=0 else '_'
+    rows = []
+    for row in np_array:
+        col = []
+        for val in row:
+            str_rep = convert_to_str(val)
+            col.append(str_rep)
+        rows.append(col)
+    return rows
 
+def run_all_TilePuzzles():
+
+    for tile_map in [49]:
+        reset_all_data()
+        # if os.path.isfile('data_'+"tilePuzzle_size_"+str(tile_map)+'.csv'):
+        #     continue
+
+
+        for mutation in range(3,10):
+            starting_tray = tp.TrayTilePuzzle(None, tile_map)
+            end_tray = tp.get_goal_tray(starting_tray)
+            starting_node = tp.TilePuzzleNode(parent=None, position=starting_tray)
+            goal_node = tp.TilePuzzleNode(parent=None, position=end_tray)
+
+
+
+
+            iteritive_W_AStar("tilePuzzle",starting_node, goal_node, starting_tray, mutation, tile_map, solution_path=tp.solution_path)
+        # create_csv(all_data, "tilePuzzle_size_"+str(tile_map))
 
 map_directory = "/Users/yanivleedon/Desktop/university/adir/WeightedAStar/maps"
 # run_all_maps(map_directory)
 # run_single_map("den011d.map",map_directory)
 # test_gui("den011d.map",map_directory)
 # run_all_maps(map_directory)
-run_all_pancakes()
+# run_all_pancakes()
+run_all_TilePuzzles()
