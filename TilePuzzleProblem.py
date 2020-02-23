@@ -34,21 +34,6 @@ class TrayTilePuzzle:
             self.tiles = tiles
 
     def shuffle_tiles(self):
-        """
-        function initTiles() {
-    var i = tileCount * tileCount - 1;
-    while (i > 0) {
-      var j = Math.floor(Math.random() * i);
-      var xi = i % tileCount;
-      var yi = Math.floor(i / tileCount);
-      var xj = j % tileCount;
-      var yj = Math.floor(j / tileCount);
-      swapTiles(xi, yi, xj, yj);
-      --i;
-    }
-  }
-        :return:
-        """
         tiles = np.copy(self.tiles)
         for i in range(len(tiles)):
             for j in range(len(tiles[i])):
@@ -232,7 +217,7 @@ def read_korf_data(korf_data_path:str):
 
 
 # reading korf puzzles
-# korf_data = read_korf_data("korf_data/korf100.txt")
+korf_data = read_korf_data("korf_data/korf100.txt")
 # array = np.array(
 #     [[0.0, 6.0, 1.0, 3.0, 9.0, -1.0],
 #      [5.0, 12.0, 8.0, 2.0, 15.0, 4.0],
@@ -240,35 +225,35 @@ def read_korf_data(korf_data_path:str):
 #      [17.0, 19.0, 13.0, 20.0, 27.0, 16.0],
 #      [23.0, 24.0, 25.0, 26.0, 28.0, 22.0],
 #      [29.0, 30.0, 31.0, 32.0, 33.0, 34.0]])
-# for key in korf_data.keys():
-#     array = korf_data[key]
-#     starting_tray = TrayTilePuzzle(array, 0)
-#     starting_node = TilePuzzleNode(parent=None, position=starting_tray)
-#     end_tray = get_goal_tray(starting_tray)
-#     goal_node = TilePuzzleNode(parent=None, position=end_tray)
-#     print(starting_node)
-#     print("\n")
-#
-#     w = 2
-#
-#     while w < 10:
-#         now = time.time()
-#         path, path_cost, total_nodes_expanded, total_nodes_generated = aStar(maze=starting_tray, start=starting_node,
-#                                                                              end=goal_node, weight=w, pure=False,
-#                                                                              sol_path_func=solution_path)
-#         print("w: {0} expanded: {1}, path cost: {2}, nodes generated: {4}, time: {3}".format(w,
-#                                                                        total_nodes_expanded,
-#                                                                        path_cost,
-#                                                                        time.time() - now,
-#                                                                         total_nodes_generated))
-#         w += 1
-array = np.array(
-    [
-        [6, 5, 4, 3],
-        [2, 1, 0, -1],
-        [7, 8, 9, 10]
-    ]
-)
+for key in korf_data.keys():
+    array = korf_data[key]
+    starting_tray = TrayTilePuzzle(array, 0)
+    starting_node = TilePuzzleNode(parent=None, position=starting_tray)
+    end_tray = get_goal_tray(starting_tray)
+    goal_node = TilePuzzleNode(parent=None, position=end_tray)
+    print(starting_node)
+    print("\n")
+
+    w = 1
+
+    while w < 10:
+        now = time.time()
+        path, path_cost, total_nodes_expanded, total_nodes_generated = aStar(maze=starting_tray, start=starting_node,
+                                                                             end=goal_node, weight=w, pure=False,
+                                                                             sol_path_func=solution_path)
+        print("w: {0} expanded: {1}, path cost: {2}, nodes generated: {4}, time: {3}".format(w,
+                                                                           total_nodes_expanded,
+                                                                           path_cost,
+                                                                           time.time() - now,
+                                                                            total_nodes_generated))
+        w += 1
+# array = np.array(
+#     [
+#         [6, 5, 4, 3],
+#         [2, 1, 0, -1],
+#         [7, 8, 9, 10]
+#     ]
+# )
 # array = np.array(
 #     [
 #         [10, 9, 8, 7],
@@ -284,24 +269,24 @@ array = np.array(
 #     ]
 # )
 # starting_tray = TrayTilePuzzle(array, 0)
-
-starting_tray = TrayTilePuzzle(num_of_cols=4)
-starting_node = TilePuzzleNode(parent=None, position=starting_tray)
-end_tray = get_goal_tray(starting_tray)
-goal_node = TilePuzzleNode(parent=None, position=end_tray)
-print(starting_node)
-print("\n")
-
-w = 1
-
-while w < 10:
-    now = time.time()
-    path, path_cost, total_nodes_expanded, total_nodes_generated = aStar(maze=starting_tray, start=starting_node,
-                                                                         end=goal_node, weight=w, pure=False,
-                                                                         sol_path_func=solution_path)
-    print("w: {0} expanded: {1}, path cost: {2}, nodes generated: {4}, time: {3}".format(w,
-                                                                   total_nodes_expanded,
-                                                                   path_cost,
-                                                                   time.time() - now,
-                                                                    total_nodes_generated))
-    w += 1
+#
+# starting_tray = TrayTilePuzzle(num_of_cols=4)
+# starting_node = TilePuzzleNode(parent=None, position=starting_tray)
+# end_tray = get_goal_tray(starting_tray)
+# goal_node = TilePuzzleNode(parent=None, position=end_tray)
+# print(starting_node)
+# print("\n")
+#
+# w = 1
+#
+# while w < 10:
+#     now = time.time()
+#     path, path_cost, total_nodes_expanded, total_nodes_generated = aStar(maze=starting_tray, start=starting_node,
+#                                                                          end=goal_node, weight=w, pure=False,
+#                                                                          sol_path_func=solution_path)
+#     print("w: {0} expanded: {1}, path cost: {2}, nodes generated: {4}, time: {3}".format(w,
+#                                                                    total_nodes_expanded,
+#                                                                    path_cost,
+#                                                                    time.time() - now,
+#                                                                     total_nodes_generated))
+#     w += 1
