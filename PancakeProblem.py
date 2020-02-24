@@ -31,12 +31,17 @@ def get_goal_tray(tray: Tray):
 
 def get_h(tray: Tray, end_node: Node):
     this_tray_pancakes = tray.pancakes
-    goal_tray_pancakes = end_node.position.pancakes
+    # goal_tray_pancakes = end_node.position.pancakes
     h = 0
-    for k, v in enumerate(goal_tray_pancakes):
-        if v != this_tray_pancakes[k]:
+    for k in range(len(tray.pancakes) - 1):
+        # if int(this_tray_ring[k])!=k:
+        # h+=1
+        if this_tray_pancakes[k] > this_tray_pancakes[k + 1]:
             h += 1
-    return h
+    # for k, v in enumerate(goal_tray_pancakes):
+    #     if v != this_tray_pancakes[k]:
+    #         h += 1
+    return h/len(tray.pancakes)
 
 
 def solution_path(current_node, maze, total_nodes_expanded, total_nodes_generated):
