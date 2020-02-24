@@ -36,12 +36,15 @@ def get_h(tray: Tray, end_node: Node):
     for k in range(len(tray.pancakes) - 1):
         # if int(this_tray_ring[k])!=k:
         # h+=1
-        if this_tray_pancakes[k] > this_tray_pancakes[k + 1]:
+        if this_tray_pancakes[k] -1 != this_tray_pancakes[k + 1] and  this_tray_pancakes[k] + 1 != this_tray_pancakes[k + 1]:
             h += 1
+    if this_tray_pancakes[len(this_tray_pancakes)-1] != len(this_tray_pancakes)-1:
+        h+=1
+
     # for k, v in enumerate(goal_tray_pancakes):
     #     if v != this_tray_pancakes[k]:
     #         h += 1
-    return h/len(tray.pancakes)
+    return h
 
 
 def solution_path(current_node, maze, total_nodes_expanded, total_nodes_generated):
@@ -81,6 +84,7 @@ class PancakeNode(Node):
             child = PancakeNode(parent=self, position=new_tray)
             child.g = self.g + 1
             child.h = weight * get_h(child.position, end_node)
+            # print("hello")
             if not pure_h:
                 child.f = child.g + child.h
             else:

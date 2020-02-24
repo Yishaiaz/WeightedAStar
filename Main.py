@@ -46,24 +46,24 @@ def validPoint(x,y,graph):
 
 
 def run_weighted_AStar(domain, map, start, end, weight, map_name, point_iteration, pure=False, sol_func= aStar.solution_path):
-    # try:
-    sol_path, path_cost, num_of_expan_nodes, num_of_gen_nodes = aStar.aStar(map, start, end, weight,pure=pure, sol_path_func=sol_func)
+    try:
+        sol_path, path_cost, num_of_expan_nodes, num_of_gen_nodes = aStar.aStar(map, start, end, weight,pure=pure, sol_path_func=sol_func)
 
 
-    listing = list()
-    listing.append(domain)
-    listing.append(map_name)
-    listing.append(point_iteration)
-    listing.append(start)
-    listing.append(end)
-    listing.append(weight)
-    listing.append(path_cost)
-    listing.append(num_of_gen_nodes)
-    listing.append(num_of_expan_nodes)
+        listing = list()
+        listing.append(domain)
+        listing.append(map_name)
+        listing.append(point_iteration)
+        listing.append(start)
+        listing.append(end)
+        listing.append(weight)
+        listing.append(path_cost)
+        listing.append(num_of_gen_nodes)
+        listing.append(num_of_expan_nodes)
 
-    # except:
-    #     print("Fail!")
-    #     return None
+    except:
+        print("Fail!")
+        return None
 
     return listing
 
@@ -79,7 +79,8 @@ def iteritive_W_AStar(domain, start,end,graph,point_iteration, map_name,solution
         return
 
     print("pure huristic length = " + str(pure_huristic[len(pure_huristic)-3]) +", expanded: " + str(pure_huristic[len(pure_huristic) - 1]) )
-    for W in range(1,101):
+    for W in np.arange(1,2.01,0.05):
+    # for W in range(1,21):
         ans = run_weighted_AStar(domain, graph, start, end, W, map_name, point_iteration, sol_func=solution_path)
         if ans == None:
             return
@@ -88,8 +89,8 @@ def iteritive_W_AStar(domain, start,end,graph,point_iteration, map_name,solution
 
         all_data.append(ans)
 
-        if isSameResult(ans,pure_huristic):
-            return;
+        # if isSameResult(ans,pure_huristic):
+        #     return;
     return
 
 def isSameResult(first,second):
@@ -176,13 +177,14 @@ def paintPath(start,end,graph,sol_path):
 
 def run_all_pancakes():
 
-    for pancake_map in range(7,16):
+    for pancake_map in range(10,15):
         reset_all_data()
         if os.path.isfile('data_'+"pancake_size_"+str(pancake_map)+'.csv'):
             continue
 
 
         for mutation in range(1, 31):
+            print("RUNNING: map: {}, mutation: {}".format(pancake_map, mutation))
             starting_tray = Tray(None, pancake_map)
             goal_tray = get_goal_tray(starting_tray)
             starting_node = PancakeNode(parent=None, position=starting_tray)
@@ -251,6 +253,6 @@ map_directory = "/Users/yanivleedon/Desktop/university/adir/WeightedAStar/maps"
 # run_single_map("den011d.map",map_directory)
 # test_gui("den011d.map",map_directory)
 # run_all_maps(map_directory)
-# run_all_pancakes()
+run_all_pancakes()
 # run_all_TilePuzzles()
-run_all_topspin()
+# run_all_topspin()
