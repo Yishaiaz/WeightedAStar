@@ -215,40 +215,40 @@ def read_korf_data(korf_data_path:str):
         line = file.readline()
     return maps_by_index
 
-
-# reading korf puzzles
-korf_data = read_korf_data("korf_data/korf100.txt")
-# array = np.array(
-#     [[0.0, 6.0, 1.0, 3.0, 9.0, -1.0],
-#      [5.0, 12.0, 8.0, 2.0, 15.0, 4.0],
-#      [11.0, 18.0, 7.0, 14.0, 21.0, 10.0],
-#      [17.0, 19.0, 13.0, 20.0, 27.0, 16.0],
-#      [23.0, 24.0, 25.0, 26.0, 28.0, 22.0],
-#      [29.0, 30.0, 31.0, 32.0, 33.0, 34.0]])
-for key in korf_data.keys():
-    array = korf_data[key]
-    starting_tray = TrayTilePuzzle(array, 0)
-    starting_node = TilePuzzleNode(parent=None, position=starting_tray)
-    end_tray = get_goal_tray(starting_tray)
-    goal_node = TilePuzzleNode(parent=None, position=end_tray)
-    print(starting_node)
-    print("\n")
-
-    w = 1
-
-    while w < 10:
-        now = time.time()
-        path, path_cost, total_nodes_expanded, total_nodes_generated = aStar(maze=starting_tray, start=starting_node,
-                                                                             end=goal_node, weight=w, pure=False,
-                                                                             sol_path_func=solution_path)
-        print("w: {0} expanded: {1}, path cost: {2}, nodes generated: {4}, time: {3}".format(w,
-                                                                           total_nodes_expanded,
-                                                                           path_cost,
-                                                                           time.time() - now,
-                                                                            total_nodes_generated))
-        w += 1
-# array = np.array(
-#     [
+#
+# # reading korf puzzles
+# korf_data = read_korf_data("korf_data/korf100.txt")
+# # array = np.array(
+# #     [[0.0, 6.0, 1.0, 3.0, 9.0, -1.0],
+# #      [5.0, 12.0, 8.0, 2.0, 15.0, 4.0],
+# #      [11.0, 18.0, 7.0, 14.0, 21.0, 10.0],
+# #      [17.0, 19.0, 13.0, 20.0, 27.0, 16.0],
+# #      [23.0, 24.0, 25.0, 26.0, 28.0, 22.0],
+# #      [29.0, 30.0, 31.0, 32.0, 33.0, 34.0]])
+# for key in korf_data.keys():
+#     array = korf_data[key]
+#     starting_tray = TrayTilePuzzle(array, 0)
+#     starting_node = TilePuzzleNode(parent=None, position=starting_tray)
+#     end_tray = get_goal_tray(starting_tray)
+#     goal_node = TilePuzzleNode(parent=None, position=end_tray)
+#     print(starting_node)
+#     print("\n")
+#
+#     w = 1
+#
+#     while w < 10:
+#         now = time.time()
+#         path, path_cost, total_nodes_expanded, total_nodes_generated = aStar(maze=starting_tray, start=starting_node,
+#                                                                              end=goal_node, weight=w, pure=False,
+#                                                                              sol_path_func=solution_path)
+#         print("w: {0} expanded: {1}, path cost: {2}, nodes generated: {4}, time: {3}".format(w,
+#                                                                            total_nodes_expanded,
+#                                                                            path_cost,
+#                                                                            time.time() - now,
+#                                                                             total_nodes_generated))
+#         w += 1
+# # array = np.array(
+# #     [
 #         [6, 5, 4, 3],
 #         [2, 1, 0, -1],
 #         [7, 8, 9, 10]

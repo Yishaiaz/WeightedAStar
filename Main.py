@@ -9,6 +9,7 @@ import GUI
 from PancakeProblem import Tray, get_goal_tray, PancakeNode, solution_path
 import TilePuzzleProblem as tp
 import numpy as np
+import TopSpinProblem as top
 # lines_for_csv="domain, run_id, start position," \
 #               " end position, weight, solution size, number of generated nodes," \
 #               "number of expanded nodes  \n "
@@ -45,24 +46,24 @@ def validPoint(x,y,graph):
 
 
 def run_weighted_AStar(domain, map, start, end, weight, map_name, point_iteration, pure=False, sol_func= aStar.solution_path):
-    try:
-        sol_path, path_cost, num_of_expan_nodes, num_of_gen_nodes = aStar.aStar(map, start, end, weight,pure=pure, sol_path_func=sol_func)
+    # try:
+    sol_path, path_cost, num_of_expan_nodes, num_of_gen_nodes = aStar.aStar(map, start, end, weight,pure=pure, sol_path_func=sol_func)
 
 
-        listing = list()
-        listing.append(domain)
-        listing.append(map_name)
-        listing.append(point_iteration)
-        listing.append(start)
-        listing.append(end)
-        listing.append(weight)
-        listing.append(path_cost)
-        listing.append(num_of_gen_nodes)
-        listing.append(num_of_expan_nodes)
+    listing = list()
+    listing.append(domain)
+    listing.append(map_name)
+    listing.append(point_iteration)
+    listing.append(start)
+    listing.append(end)
+    listing.append(weight)
+    listing.append(path_cost)
+    listing.append(num_of_gen_nodes)
+    listing.append(num_of_expan_nodes)
 
-    except:
-        print("Fail!")
-        return None
+    # except:
+    #     print("Fail!")
+    #     return None
 
     return listing
 
@@ -70,7 +71,7 @@ def run_weighted_AStar(domain, map, start, end, weight, map_name, point_iteratio
 
 def iteritive_W_AStar(domain, start,end,graph,point_iteration, map_name,solution_path=aStar.solution_path):
     # pure_huristic = run_weighted_AStar(domain, graph, start, end, 1, map_name, point_iteration, True, sol_func=solution_path)
-    print("map: " + str(map_name) + ", mutation num: " + str(point_iteration))
+    # print("map: " + str(map_name) + ", mutation num: " + str(point_iteration))
     pure_huristic = run_weighted_AStar(domain, graph, start, end, 100, map_name, point_iteration, False, sol_func=solution_path)
 
     if not pure_huristic:
@@ -87,8 +88,8 @@ def iteritive_W_AStar(domain, start,end,graph,point_iteration, map_name,solution
 
         all_data.append(ans)
 
-        # if isSameResult(ans,pure_huristic):
-        #     return;
+        if isSameResult(ans,pure_huristic):
+            return;
     return
 
 def isSameResult(first,second):
@@ -217,12 +218,33 @@ def run_all_TilePuzzles():
             end_tray = tp.get_goal_tray(starting_tray)
             starting_node = tp.TilePuzzleNode(parent=None, position=starting_tray)
             goal_node = tp.TilePuzzleNode(parent=None, position=end_tray)
-
-
-
-
             iteritive_W_AStar("tilePuzzle",starting_node, goal_node, starting_tray, mutation, tile_map, solution_path=tp.solution_path)
         # create_csv(all_data, "tilePuzzle_size_"+str(tile_map))
+
+def run_all_topspin():
+    # k_param = 3
+    for k_param in range(3,5):
+        for tile_map in [9]:
+            reset_all_data()
+            # if os.path.isfile('data_'+"tilePuzzle_size_"+str(tile_map)+'.csv'):
+            #     continue
+            mutation = 1
+            error=0
+            while mutation < 30:
+            # for mutation in range(1,31):
+                try:
+                    start_tray = top.TrayTopSpin(array_size=tile_map, k_param=k_param)
+                    end_goal = top.TopSpinNode(position=top.TrayTopSpin(scrambled_array=np.linspace(0, tile_map - 1, tile_map), k_param=k_param))
+                    start_node = top.TopSpinNode(position=start_tray)
+                    print("RUNNING: map: {}, K: {}, mutation: {}".format(tile_map, k_param, mutation))
+                    iteritive_W_AStar("topSpin", start_node, end_goal, start_tray, mutation, tile_map,solution_path=top.solution_path)
+                    mutation += 1
+
+                except:
+                    error+=1
+                    print("map: {}, K: {}, error: {}, mutation: {}".format(tile_map,k_param,error,mutation))
+                    continue
+            create_csv(all_data, "topSpin_K_"+str(k_param)+"_size"+str(tile_map))
 
 map_directory = "/Users/yanivleedon/Desktop/university/adir/WeightedAStar/maps"
 # run_all_maps(map_directory)
@@ -230,4 +252,5 @@ map_directory = "/Users/yanivleedon/Desktop/university/adir/WeightedAStar/maps"
 # test_gui("den011d.map",map_directory)
 # run_all_maps(map_directory)
 # run_all_pancakes()
-run_all_TilePuzzles()
+# run_all_TilePuzzles()
+run_all_topspin()
