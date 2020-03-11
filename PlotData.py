@@ -72,6 +72,8 @@ def extract_and_plot_avgs_by_w(data: pd.DataFrame, plot_name_to_save: str = "tes
 
 
 def extract_w_behavior_per_domain(domain_map_list:list = [], problem_analyzed_dir: str = "Maps"):
+    file_names_used = list()
+
     for map_data in domain_map_list:
         total_map_sol_per_expanded_star = []
         total_map_sol_per_c_star = []
@@ -108,6 +110,10 @@ def extract_w_behavior_per_domain(domain_map_list:list = [], problem_analyzed_di
         name_of_file = map_data['map_name'].values[0]
         if type(name_of_file) == type(tuple()):
             name_of_file = name_of_file[0]
+        if name_of_file not in file_names_used:
+            file_names_used.append(name_of_file)
+        name_of_file = str(name_of_file) + str(np.random.randint(0,20,1))
+        file_names_used.append(name_of_file)
         map_data.to_csv("Analyzed/{1}/{0}.csv".format(name_of_file, problem_analyzed_dir))
         print()
 
@@ -129,25 +135,64 @@ def extract_w_behavior_per_domain(domain_map_list:list = [], problem_analyzed_di
 
 
 # PANCAKE
-num = 7
-seven_size_pancake_data = pd.read_csv("Analyzed/pancake_problem/{0}.csv".format(num))
-extract_and_plot_avgs_by_w(seven_size_pancake_data, "pancake size {0} ".format(num))
-num = 8
-eight_size_pancake_data = pd.read_csv("Analyzed/pancake_problem/{0}.csv".format(num))
-extract_and_plot_avgs_by_w(eight_size_pancake_data, "pancake size {0} ".format(num))
-num = 9
-nine_size_pancake_data = pd.read_csv("Analyzed/pancake_problem/{0}.csv".format(num))
-extract_and_plot_avgs_by_w(nine_size_pancake_data, "pancake size {0} ".format(num))
 num = 10
-ten_size_pancake_data = pd.read_csv("Analyzed/pancake_problem/{0}.csv".format(num))
-extract_and_plot_avgs_by_w(ten_size_pancake_data, "pancake size {0} ".format(num))
+pancake_data10 = pd.read_csv("Analyzed/pancake_problem/{0}.csv".format(num))
+# pd.read_csv("new_pancake_data/data_pancake_size_{0}.csv".format(num))
+extract_and_plot_avgs_by_w(pancake_data10, "Analyzed/pancake_problem/graphs/pancake size {0} ".format(num))
 num = 11
-eleven_size_pancake_data = pd.read_csv("Analyzed/pancake_problem/{0}.csv".format(num))
-extract_and_plot_avgs_by_w(eleven_size_pancake_data, "pancake size {0} ".format(num))
+pancake_data11 = pd.read_csv("Analyzed/pancake_problem/{0}.csv".format(num))
+# pd.read_csv("new_pancake_data/data_pancake_size_{0}.csv".format(num))
+extract_and_plot_avgs_by_w(pancake_data11, "Analyzed/pancake_problem/graphs/pancake size {0} ".format(num))
 num = 12
-twelve_size_pancake_data = pd.read_csv("Analyzed/pancake_problem/{0}.csv".format(num))
-extract_and_plot_avgs_by_w(twelve_size_pancake_data, "pancake size {0} ".format(num))
-# a = [seven_size_pancake_data, eight_size_pancake_data, nine_size_pancake_data, ten_size_pancake_data, eleven_size_pancake_data, twelve_size_pancake_data]
+pancake_data12 = pd.read_csv("Analyzed/pancake_problem/{0}.csv".format(num))
+# pd.read_csv("new_pancake_data/data_pancake_size_{0}.csv".format(num))
+extract_and_plot_avgs_by_w(pancake_data12, "Analyzed/pancake_problem/graphs/pancake size {0} ".format(num))
+num = 13
+pancake_data13 = pd.read_csv("Analyzed/pancake_problem/{0}.csv".format(num))
+# pd.read_csv("new_pancake_data/data_pancake_size_{0}.csv".format(num))
+extract_and_plot_avgs_by_w(pancake_data13, "Analyzed/pancake_problem/graphs/pancake size {0} ".format(num))
+num = 14
+pancake_data14 = pd.read_csv("Analyzed/pancake_problem/{0}.csv".format(num))
+# pd.read_csv("new_pancake_data/data_pancake_size_{0}.csv".format(num))
+extract_and_plot_avgs_by_w(pancake_data14, "Analyzed/pancake_problem/graphs/pancake size {0} ".format(num))
+# num = 12
+# twelve_size_pancake_data = pd.read_csv("Analyzed/pancake_problem/{0}.csv".format(num))
+# extract_and_plot_avgs_by_w(twelve_size_pancake_data, "pancake size {0} ".format(num))
+# a = [pancake_data10, pancake_data11, pancake_data12, pancake_data13, pancake_data14]
 # extract_w_behavior_per_domain(a, 'pancake_problem')
 
 
+
+# TOP SPIN
+# # size = 7
+# k_param = '7[4]'
+# top_spin_data1 = pd.read_csv("Analyzed/TopSpin/{0}.csv".format(k_param))
+# extract_and_plot_avgs_by_w(top_spin_data1, "Analyzed/TopSpin/Graphs/top spin org_file={0}".format(k_param))
+# # size = 8
+# k_param = '7[11]'
+# top_spin_data2 = pd.read_csv("Analyzed/TopSpin/{0}.csv".format(k_param))
+# extract_and_plot_avgs_by_w(top_spin_data2, "Analyzed/TopSpin/Graphs/top spin org_file={0}".format(k_param))
+# # k_param = '8[0]'
+# # size = 9
+# # top_spin_data3 = pd.read_csv("Analyzed/TopSpin/{0}.csv".format(k_param))
+# # extract_and_plot_avgs_by_w(top_spin_data3, "Analyzed/TopSpin/Graphs/top spin org_file={0}".format(k_param))
+# # k_param = '8[18]'
+# # size = 7
+# # top_spin_data4 = pd.read_csv("Analyzed/TopSpin/{0}.csv".format(k_param))
+# # extract_and_plot_avgs_by_w(top_spin_data4, "Analyzed/TopSpin/Graphs/top spin org_file={0}".format(k_param))
+# # size = 8
+# k_param = '9[3]'
+# top_spin_data5 = pd.read_csv("Analyzed/TopSpin/{0}.csv".format(k_param))
+# extract_and_plot_avgs_by_w(top_spin_data5, "Analyzed/TopSpin/Graphs/top spin org_file={0}".format(k_param))
+# # size = 9
+# k_param = '9[6]'
+# top_spin_data6 = pd.read_csv("Analyzed/TopSpin/{0}.csv".format(k_param))
+# extract_and_plot_avgs_by_w(top_spin_data6, "Analyzed/TopSpin/Graphs/top spin org_file={0}".format(k_param))
+# # size = 9
+# k_param = '9[10]'
+# top_spin_data7 = pd.read_csv("Analyzed/TopSpin/{0}.csv".format(k_param))
+# extract_and_plot_avgs_by_w(top_spin_data7, "Analyzed/TopSpin/Graphs/top spin org_file={0}".format(k_param))
+# # a = [top_spin_data1, top_spin_data2, top_spin_data3, top_spin_data4, top_spin_data5, top_spin_data6, top_spin_data7]
+# # extract_w_behavior_per_domain(a, 'TopSpin')
+#
+#
